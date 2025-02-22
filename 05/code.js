@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var inp = fs.readFileSync("./05.txt",'utf-8').replaceAll('\r','');
+var inp = fs.readFileSync("05/input.txt",'utf-8').replaceAll('\r','');
 var x = inp.split('\n')
 rules = []
 updates = []
@@ -54,5 +54,3 @@ for (update of updates) {
     fullSoma += update[(update.length-1)/2]
 }
 console.log(fullSoma)
-// console.log(ruleLeft)
-// console.log(updates)
