@@ -33,9 +33,8 @@ for (const [key, values] of Object.entries(occurrences)) {
 }
 
 //That's not the right answer; your answer is too high. If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit. Please wait one minute before trying again. [Return to Day 8]
-//358, 351
+//358, 351, 344
 
-// That's not the right answer; your answer is too high. Curiously, it's the right answer for someone else; you might be logged in to the wrong account or just unlucky. In any case, you need to be using your puzzle input. If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit. Please wait one minute before trying again. [Return to Day 8]
 
 console.log(x.map(y=>y.join('')).join('\n'))
 console.log(x.map(y=>y.join('')).join('\n').match(/#/g).length)
