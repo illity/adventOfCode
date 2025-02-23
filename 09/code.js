@@ -44,8 +44,6 @@ while(1) {
     // console.log(i, j, full.join(''))
     // itera por todos os ids da direita pra esquerda
     // para cada um, procura um lugar onde ele caiba, da esquerda pra direita
-    // vem do lado direito e acha uma string que caiba
-
     if (j < 1) break
     while(full[j] == '.' & (full[j]>fileId)) j--
     var fileId = (full[j])
