@@ -1,125 +1,134 @@
 var fs = require('fs');
 
-var inp = fs.readFileSync("15/test.txt",'utf-8').replaceAll('\r','');
-var x = inp.split('\n\n')
-var [map, moves] = x
-moves = moves.split('\n').join('')
-console.log(moves)
+var inp = fs.readFileSync("16/test.txt",'utf-8').replaceAll('\r','');
+var x = inp //.replace('S','>')
+
+r90 = {
+     '>': 'v',
+     'v': '<',
+     '<': '^',
+     '^': '>',     
+}
+r270 = {
+     '>': '^',
+     '^': '<',
+     '<': 'v',
+     'v': '>'
+}
+
+
+movementSet = {
+     '^':'-1,0',
+     '>':'0,1',
+     '<':'0,-1',
+     'v':'1,0',
+}
 
 add = (x,y) =>  (+x.split(',')[0] + +y.split(',')[0])+
                 ','+
                 (+x.split(',')[1] + +y.split(',')[1])
 
-move = (map, pos, destination, movement) => {
-     var [dX,dY] = destination.split(',')
-     var [x,y] = pos.split(',')
-     if (map[dX][dY] == '#') return false
-     if (map[dX][dY] == '.') {
-          map[dX][dY] = map[x][y]
-          map[x][y] = '.'
-          return true
-     }
-     if (map[dX][dY] == 'O') {
-          if (move(map, destination, add(destination, movement), movement)) {
-               move(map, pos, destination, movement)
-               //map[dX][dY] = map[x][y]
-               return true
-          }
-     }
-     return false;
-}
+map = x.split('\n').map(x=>Array.from(x))
 
+index = map.map(x=>x.indexOf('S'))
+y = index.filter(x=>x!=-1)[0]
+x = index.findIndex(x=>x>0)
 
-pos = map.indexOf('@')
-map = map.split('\n').map(x=>Array.from(x).map(x=>x))
-var [w, h] = [map.length, map[0].length]
-pos = (pos/(w+1)>>0)+','+pos%(w+1)
-for (let i = 0; i<moves.length-1; i++) {
+forward = (cursor) => {
      
-     
-     movement = {
-          '^':'-1,0',
-          '>':'0,1',
-          '<':'0,-1',
-          'v':'1,0',
-     }[moves[i]]
+          
+          y = cursor.y
+          x = cursor.x
+          arrow = cursor.arrow
+          if (x!=-1) {
+               // console.log(movementSet[arrow])
+               var [xf,yf] = add(movementSet[arrow], x+','+y).split(',') 
+               // console.log(xf,yf, map[xf][yf])
+               if (map[xf][yf] == 'E') return 'done'
+               if (map[xf][yf] == '#') return false
 
-     if (move(map, pos, add(pos, movement), movement)) pos = add(pos, movement)
-}
-
-
-var soma = 0
-for (let i = 0; i < w; i++) {
-     for (let j = 0; j<h; j++) {
-          if (map[i][j] == 'O') soma += 100*i+j
-     }
-}
-
-console.log(soma)
-
-
-
-
-
-move = (map, pos, destination, movement, auxiliar = false) => {
-     var [dX,dY] = destination.split(',')
-     var [x,y] = pos.split(',')
-     if (map[dX][dY] == '#') return false
-     //movimentos baixo e cima
-     console.log(map.map(x=>x.join('')).join('\n'))
-     if (map[dX][dY] == '.') {
-//          console.log(movement.split(',')[1])
-          if (movement.split(',')[1]==0)
-          if (!auxiliar) {
-               if (map[x][y] == '[')
-                    if (!move(map, add(pos,'0,-1'), add(destination,'0,-1'), movement, true)) {
-                         return false
+               else if (map[xf][yf] == '.') {
+                    // console.log(x,y,xf,yf)
+                    // console.log(map[x][y])
+                    return {
+                         'x': xf,
+                         'y': yf,
+                         'arrow': arrow
                     }
-               if (map[x][y] == ']') 
-                    if (!move(map, add(pos,'0,1'), add(destination,'0,1'), movement, true)) {
-                         return false
-                    }
-     
+               }
+               // console.log(x,y)
           }
-          map[dX][dY] = map[x][y]
-          map[x][y] = '.'
-     
-          return true
-     }
-     //movimentos esquerda e direita ficam normais
-     if (map[dX][dY] == '[' || map[dX][dY] == ']') {
-          console.log('oii')
-          if (move(map, destination, add(destination, movement), movement)) {
-               move(map, pos, destination, movement)
-               //map[dX][dY] = map[x][y]
-               return true
-          }
-     }
-     return false;
 }
-var x = inp.split('\n\n')
-var [map, moves] = x
 
-map = map.replaceAll('#','##')
-.replaceAll('O','[]')
-.replaceAll('.','..')
-.replaceAll('@','@.')
+right = (cursor) => {
+     return {
+          'x': cursor.x,
+          'y': cursor.y,
+          'arrow': r90[cursor.arrow]
 
-
-
-pos = map.indexOf('@')
-map = map.split('\n').map(x=>Array.from(x).map(x=>x))
-var [w, h] = [map[0].length, map.length]
-pos = (pos/(w+1)>>0)+','+pos%(w+1)
-for (let i = 0; i<6; i++) {
-     
-     
-     movement = {
-          '^':'-1,0',
-          '>':'0,1',
-          '<':'0,-1',
-          'v':'1,0',
-     }[moves[i]]
-     if (move(map, pos, add(pos, movement), movement)) pos = add(pos, movement)
+     }
 }
-console.log(map.map(x=>x.join('')).join('\n'))
+left = (cursor) => {
+     return {
+          'x': cursor.x,
+          'y': cursor.y,
+          'arrow': r270[cursor.arrow]
+
+     }
+}
+
+fs.writeFileSync("16/output.txt", '', 'utf-8');
+
+
+
+var count = 0
+// var states = []
+
+bestCosts = {
+}
+
+statesPath = []
+
+solve = (cursor, cost, states='') => {
+     if (cursor=='done') {
+          statesPath.push([states, cost])
+          return cost
+     }
+     if (!cursor) return 999999999
+     state = cursor.x+','+cursor.y+','+cursor.arrow
+     if (cost > bestCosts[state])  {
+          return 9999999999
+     }
+     count++
+     // console.log(count)
+     //lost
+     bestCosts[state] = cost
+     
+     // if (!map.map(x=>x.join('')).join('\n').includes('E')) 
+     // beenplaces.push(mapString.in)
+     // console.log('state:', state)
+     // states.push(state)
+     // currentMap = map.map(x=>x.map(x=>x))
+     // currentMap[cursor.x][cursor.y] = cursor.arrow
+     // fs.appendFileSync("16/output.txt", currentMap.map(x=>x.join('')).join('\n')+cost+Array(39).fill(0).map(x=>'\n').join(''), 'utf-8');
+     // console.log(currentMap.map(x=>x.join('')).join('\n'))
+     
+     // console.log(states)
+          return  Math.min(
+               solve(left(cursor), cost+1000, states+';'+state),
+               solve(right(cursor), cost+1000, states+';'+state),
+               solve(forward(cursor), cost+1, states+';'+state),
+          )
+     
+
+}
+
+console.log(x)
+bestCost = solve({'x': x, 'y':y, 'arrow':'>'}, 0)
+statesPath = statesPath.filter(x=>x[1]==bestCost)
+
+positions = new Set()
+for (path of statesPath)
+     path[0].split(';').filter(x=>x.includes(',')).map(x=>x.split(',')[0]+','+x.split(',')[1]).map(x=>positions.add(x))
+
+console.log(positions)
