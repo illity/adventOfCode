@@ -1,9 +1,9 @@
 var fs = require('fs');
 
-var inp = fs.readFileSync("18/input.txt", 'utf-8').replaceAll('\r', '');
+var inp = fs.readFileSync("18/test.txt", 'utf-8').replaceAll('\r', '');
 var data = inp.split('\n'); 
-sz = 71
-bytes = 1024
+sz = 7
+bytes = 12
 var map = Array(sz).fill(0).map(x=>Array(sz).fill('.'))
 for (let i = 0; i<bytes; i++) {
     [x,y] = data[i].split(',')
@@ -67,6 +67,7 @@ function pathfind(maze, pos, depth) {
     const queue = [[startX, startY]]; 
 
     while (queue.length > 0) {
+        console.log(queue)
         const newQueue = [];
 
         for (let i = 0; i < queue.length; i++) {
